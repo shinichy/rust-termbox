@@ -6,6 +6,7 @@
 extern mod std;
 use std::libc::types::os::arch::c95::{ c_int, c_uint};
 use std::ptr;
+use std::task;
 
 /*
  *
@@ -225,18 +226,18 @@ pub enum style {
     bold_underline
 }
 
-// Convenience functions
-// pub fn with_term(f: &'static pub fn()) {
-//     init();
-//     let res = task::try(f);
-//     shutdown();
-//     match res {
-//         Err(_) => {            
-//             error!("with_term: An error occured.");
-//         }
-//         _ => {}
-//     }
-// }
+//Convenience functions
+pub fn with_term(f: ~'static fn()) {
+    init();
+    let res = task::try(f);
+    shutdown();
+    match res {
+        Err(_) => {            
+            error!("with_term: An error occured.");
+        }
+        _ => {}
+    }
+}
 
 pub fn nil_raw_event() -> raw_event { 
     raw_event{etype: 0, emod: 0, key: 0, ch: 0, w: 0, h: 0}
