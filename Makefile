@@ -13,7 +13,7 @@ examples/demo: build examples/demo.rs
 
 doc:
 	rm -f doc/*.html
-	rustdoc --output-dir doc --output-format html termbox.rs
+	rustdoc --output doc --output-format html termbox.rs
 
 clean:
 	rm -rf nsf
