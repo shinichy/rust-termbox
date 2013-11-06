@@ -19,7 +19,8 @@ clean:
 	rm -rf nsf
 	rm -f libtermbox*.so
 	rm -f demo
-	rm -f doc/*.html
-	rm -f examples/demo examples/hello
+	rm -f doc/*.html 
+	rm -rf doc/termbox
+	rm -f examples/demo examples/hello 
 
 .PHONY: clean doc nsf examples

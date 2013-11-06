@@ -1,0 +1,13 @@
+before_install:
+ - yes | sudo add-apt-repository ppa:hansjorg/rust
+ - sudo apt-get update
+install:
+ - sudo apt-get install rust-nightly
+script:
+ - mkdir ~/termbox && cd ~/termbox
+ - git clone https://github.com/nsf/termbox.git .
+ - ./waf configure
+ - ./waf
+ - sudo cp build/src/*so* /usr/lib/
+ - sudo cp src/termbox.h /usr/include/
+ - rustpkg install github.com/drhodes/rust-termbox
