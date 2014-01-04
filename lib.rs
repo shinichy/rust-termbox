@@ -1,7 +1,7 @@
-#[link(name = "termbox",
-       vers = "0.1.0")];
+#[desc = "A Rust wrapper for the termbox library"];
+#[license = "MIT"];
+#[crate_id = "termbox#0.1.0"];
 #[crate_type = "lib" ];
-
 
 extern mod std;
 use std::libc::types::os::arch::c95::{ c_int, c_uint};
@@ -76,7 +76,7 @@ pub struct raw_event {
 mod c {
     use std::libc::types::os::arch::c95::{ c_int, c_uint};
 
-    #[link_args = "-ltermbox"]
+		#[link(name = "termbox")]
     extern {
 
         pub fn tb_init() -> c_int;
@@ -100,62 +100,62 @@ mod c {
     }
 }
 
-#[fixed_stack_segment]
-pub fn init() -> int { 
+
+pub fn init() -> int {
     unsafe { c::tb_init() as int }
 }
 
-#[fixed_stack_segment]
-pub fn shutdown() { 
+
+pub fn shutdown() {
     unsafe { c::tb_shutdown(); }
 }
 
-#[fixed_stack_segment]
-pub fn width() -> uint { 
-    unsafe { 
-        return  c::tb_width() as uint; 
+
+pub fn width() -> uint {
+    unsafe {
+        return  c::tb_width() as uint;
     }
 }
 
-#[fixed_stack_segment]
-pub fn height() -> uint { 
+
+pub fn height() -> uint {
     unsafe {
-        return  c::tb_height() as uint; 
+        return  c::tb_height() as uint;
     }
 }
 
 /**
  * Clear buffer.
  */
-#[fixed_stack_segment]
-pub fn clear() { 
+
+pub fn clear() {
     unsafe {
-        c::tb_clear(); 
+        c::tb_clear();
     }
 }
 
 // /**
 //  * Write buffer to terminal.
 //  */
-#[fixed_stack_segment]
-pub fn present() { 
+
+pub fn present() {
     unsafe {
-        c::tb_present(); 
+        c::tb_present();
     }
 }
 
-#[fixed_stack_segment]
-pub fn set_cursor(cx: int, cy: int) { 
+
+pub fn set_cursor(cx: int, cy: int) {
     unsafe {
-        c::tb_set_cursor(cx as c_int, cy as c_int); 
+        c::tb_set_cursor(cx as c_int, cy as c_int);
     }
 }
 
-#[fixed_stack_segment]
+
 // low-level wrapper
-pub fn change_cell(x: uint, y: uint, ch: u32, fg: u16, bg: u16) { 
+pub fn change_cell(x: uint, y: uint, ch: u32, fg: u16, bg: u16) {
     unsafe {
-        c::tb_change_cell(x as c_uint, y as c_uint, ch, fg, bg); 
+        c::tb_change_cell(x as c_uint, y as c_uint, ch, fg, bg);
     }
 }
 
@@ -185,11 +185,11 @@ pub fn convert_style(sty: style) -> u16 {
 /**
  * Print a string to the buffer.  Leftmost charater is at (x, y).
  */
-#[fixed_stack_segment]
+
 pub fn print(x: uint, y: uint, sty: style, fg: color, bg: color, s: ~str) {
     let fg: u16 = convert_color(fg) | convert_style(sty);
     let bg: u16 = convert_color(bg);
-    for (i, ch) in s.iter().enumerate() {
+    for (i, ch) in s.chars().enumerate() {
         unsafe {
             c::tb_change_cell((x + i) as c_uint, y as c_uint, ch as u32, fg, bg);
         }
@@ -199,7 +199,7 @@ pub fn print(x: uint, y: uint, sty: style, fg: color, bg: color, s: ~str) {
 // /**
 //  * Print a charater to the buffer.
 //  */
-#[fixed_stack_segment]
+
 pub fn print_ch(x: uint, y: uint, sty: style, fg: color, bg: color, ch: char) {
     unsafe {
         let fg: u16 = convert_color(fg) | convert_style(sty);
@@ -227,23 +227,22 @@ pub enum style {
 }
 
 //Convenience functions
-pub fn with_term(f: ~'static fn()) {
+pub fn with_term(f: proc()) {
     init();
     let res = task::try(f);
     shutdown();
     match res {
-        Err(_) => {            
+        Err(_) => {
             error!("with_term: An error occured.");
         }
         _ => {}
     }
 }
 
-pub fn nil_raw_event() -> raw_event { 
+pub fn nil_raw_event() -> raw_event {
     raw_event{etype: 0, emod: 0, key: 0, ch: 0, w: 0, h: 0}
 }
 
-#[feature(struct_variant)] 
 enum event {
     key_event(u8, u16, u32),
     resize_event(i32, i32),
@@ -254,7 +253,7 @@ enum event {
  * Get an event if within timeout milliseconds, otherwise return urn no_event.
  */
 
-#[fixed_stack_segment]
+
 pub fn peek_event(timeout: uint) -> event {
     unsafe {
         let ev = nil_raw_event();
@@ -266,7 +265,7 @@ pub fn peek_event(timeout: uint) -> event {
 // /**
 //  * Blocking function to return urn next event.
 //  */
-#[fixed_stack_segment]
+
 pub fn poll_event() -> event {
     unsafe {
         let ev = nil_raw_event();
