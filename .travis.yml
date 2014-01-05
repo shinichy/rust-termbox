@@ -10,4 +10,4 @@ script:
  - ./waf
  - sudo cp build/src/*so* /usr/lib/
  - sudo cp src/termbox.h /usr/include/
- - rustpkg install github.com/drhodes/rust-termbox
+ - rustpkg install github.com/shinichy/rust-termbox
