@@ -1,12 +1,17 @@
-#[desc = "A Rust wrapper for the termbox library"];
-#[license = "MIT"];
-#[crate_id = "termbox#0.1.0"];
-#[crate_type = "lib" ];
+#![desc = "A Rust wrapper for the termbox library"]
+#![license = "MIT"]
+#![crate_id = "termbox#0.1.0"]
+#![crate_type = "lib" ]
 
-extern mod std;
-use std::libc::types::os::arch::c95::{ c_int, c_uint};
-use std::ptr;
+#![feature(globs)]
+#![feature(phase)]
+
+#[phase(syntax, link)] extern crate log;
+extern crate libc;
+
 use std::task;
+
+pub use libc::types::os::arch::c95::{c_int, c_uint};
 
 /*
  *
@@ -74,7 +79,7 @@ pub struct raw_event {
  * Foreign functions from termbox.
  */
 mod c {
-    use std::libc::types::os::arch::c95::{ c_int, c_uint};
+    use libc::types::os::arch::c95::{ c_int, c_uint};
 
 		#[link(name = "termbox")]
     extern {
@@ -98,6 +103,10 @@ mod c {
         pub fn tb_peek_event(ev: *::raw_event, timeout: c_uint) -> c_int;
         pub fn tb_poll_event(ev: *::raw_event) -> c_int;
     }
+}
+
+fn test() {
+
 }
 
 
@@ -227,7 +236,7 @@ pub enum style {
 }
 
 //Convenience functions
-pub fn with_term(f: proc()) {
+pub fn with_term(f: proc():Send) {
     init();
     let res = task::try(f);
     shutdown();
@@ -257,7 +266,7 @@ enum event {
 pub fn peek_event(timeout: uint) -> event {
     unsafe {
         let ev = nil_raw_event();
-        let rc = c::tb_peek_event(ptr::to_unsafe_ptr(&ev), timeout as c_uint);
+        let rc = c::tb_peek_event(&ev, timeout as c_uint);
         return unpack_event(rc, &ev);
     }
 }
@@ -269,7 +278,7 @@ pub fn peek_event(timeout: uint) -> event {
 pub fn poll_event() -> event {
     unsafe {
         let ev = nil_raw_event();
-        let rc = c::tb_poll_event(ptr::to_unsafe_ptr(&ev));
+        let rc = c::tb_poll_event(&ev);
         return unpack_event(rc, &ev);
     }
 }
