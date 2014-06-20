@@ -1,5 +1,5 @@
-extern mod std;
-extern mod termbox;
+extern crate std;
+extern crate termbox;
 
 use std::io::Timer;
 use tb = termbox;
